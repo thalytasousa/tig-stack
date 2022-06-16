@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ${APP_NAME}
+  name: ${SERVICE_NAME}
+
+spec:
+  type: NodePort
+  ports:
+  - port: ${SERVICE_PORT}
+    targetPort: 3000
+    nodePort: 32359
+    protocol: TCP
+    name: http
+  selector:
+    app: ${APP_NAME}

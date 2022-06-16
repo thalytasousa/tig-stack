@@ -1,0 +1,14 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  labels:
+    app: ${APP_NAME}
+  name: grafana-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local
+  resources:
+    requests:
+      storage: 2Gi
+

@@ -1,0 +1,50 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${APP_NAME_INFLUXDB}
+  labels:
+    app: ${APP_NAME_INFLUXDB}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${APP_NAME_INFLUXDB}
+  template:
+    metadata:
+      labels:
+        app: ${APP_NAME_INFLUXDB}
+    spec:
+      hostname: ${APP_NAME_INFLUXDB}
+
+      volumes:
+      - name: influxdb-data
+        persistentVolumeClaim:
+          claimName: influxdb-data
+
+      securityContext:
+          runAsUser: 472
+          fsGroup: 472
+
+      containers:
+      - image: docker.io/influxdb:${INFLUXDB_VERSION}
+        name: influxdb
+        ports:
+        - containerPort: 8086
+          name: http
+        env:
+        - name: TZ
+          value: "America/Recife"
+        envFrom:
+          - secretRef:
+              name: influxdb-secrets
+        volumeMounts:
+        - name: influxdb-data
+          mountPath: /var/lib/influxdb
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1"
+          limits:
+            memory: "2Gi"
+            cpu: "2"

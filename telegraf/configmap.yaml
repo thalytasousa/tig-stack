@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: telegraf-config
+  labels:
+    app: ${APP_NAME_TELEGRAF}
+data:
+  telegraf.conf: |+
+    [global_tags]
+      user = "telegraf"
+    [agent]
+      interval = "10s"
+      round_interval = true
+      metric_batch_size = 1000
+      metric_buffer_limit = 10000
+      collection_jitter = "0s"
+      flush_interval = "10s"
+      flush_jitter = "0s"
+      precision = ""
+      hostname = ""
+      omit_hostname = false
+    [[outputs.influxdb]]
+      urls = ["http://influxdb:8086"]
+      database = "telegraf"
+      username = "telegraf"
+      password = "telegraf"
+      skip_database_creation = true
+    [[inputs.cpu]]
+      percpu = true
+      totalcpu = true
+      collect_cpu_time = false
+      report_active = false
+    [[inputs.disk]]
+      ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs"]
+    [[inputs.diskio]]
+    [[inputs.kernel]]
+    [[inputs.mem]]
+    [[inputs.processes]]
+    [[inputs.swap]]
+    [[inputs.system]]
+    [[inputs.statsd]]
+      max_tcp_connections = 250
+      tcp_keep_alive = false
+      service_address = ":8125"
+      delete_gauges = true
+      delete_counters = true
+      delete_sets = true
+      delete_timings = true
+      metric_separator = "."
+      allowed_pending_messages = 10000
+      percentile_limit = 1000
+      parse_data_dog_tags = true 
+      read_buffer_size = 65535
+    [[inputs.netstat]]
+    [[inputs.net]]

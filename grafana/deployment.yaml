@@ -1,0 +1,55 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${APP_NAME}
+  labels:
+    app: ${APP_NAME}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${APP_NAME}
+  template:
+    metadata:
+      labels:
+        app: ${APP_NAME}
+    spec:
+      hostname: ${APP_NAME}
+
+      volumes:
+      - name: grafana-plugins
+        persistentVolumeClaim:
+          claimName: grafana-plugins
+      - name: grafana-data
+        persistentVolumeClaim:
+          claimName: grafana-data
+
+      securityContext:
+          runAsUser: 472
+          fsGroup: 472
+
+      containers:
+      - image: grafana/grafana:${GRAFANA_VERSION}
+        name: grafana
+        ports:
+        - containerPort: 3000
+          name: http
+        env:
+        - name: TZ
+          value: "America/Recife"
+        envFrom:
+          - secretRef:
+              name: grafana-secrets
+        volumeMounts:
+        - name: grafana-plugins
+          mountPath: /var/lib/grafana/plugins
+        - name: grafana-data
+          mountPath: /var/lib/grafana
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1"
+          limits:
+            memory: "2Gi"
+            cpu: "2"
